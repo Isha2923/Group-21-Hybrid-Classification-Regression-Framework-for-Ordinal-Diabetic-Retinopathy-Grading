@@ -1,5 +1,3 @@
-# Group-21-Hybrid-Classification-Regression-Framework-for-Ordinal-Diabetic-Retinopathy-Grading
-
 # 🔬 Hybrid Classification-Regression Framework for Diabetic Retinopathy Grading
 
 <div align="center">
