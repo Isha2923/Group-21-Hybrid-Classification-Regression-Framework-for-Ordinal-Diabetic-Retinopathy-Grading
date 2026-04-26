@@ -278,8 +278,6 @@ The pipeline consists of the following stages:
 
 ### 3️. Hybrid EfficientNet-B3 Model
 
-![Model Architecture](Methodology/architecture.jpeg)
-
 - Backbone: EfficientNet-B3 (pretrained on ImageNet)
 - Feature Extraction:
   - Global Average Pooling → 1536-dimensional feature vector
