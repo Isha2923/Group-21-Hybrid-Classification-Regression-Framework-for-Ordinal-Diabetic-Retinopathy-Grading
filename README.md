@@ -241,24 +241,141 @@ grayscale_cam = cam(input_tensor=img_tensor, targets=[RegressionTarget()])[0]
 
 ## Methodology
 
+The proposed framework follows a structured pipeline for diabetic retinopathy (DR) severity grading, combining preprocessing, hybrid deep learning, threshold optimization, and ensemble learning.
+
+---
+
+### Overall Pipeline
+
+The complete workflow is illustrated below:
+
 ![Methodology Pipeline](assets/methodology_pipeline.jpeg)
 
+The pipeline consists of the following stages:
 
-### Preprocessing — Ben Graham Pipeline
-Raw fundus images are: (1) circle-cropped to remove dark borders, (2) resized to 288×288, and (3) enhanced via Gaussian subtraction:
+---
 
-```
-I_enh = 4×I − 4×G_σ(I) + 128     (σ = 10)
-```
+### 1. Dataset & Preprocessing
 
-This high-pass filter removes illumination gradients and amplifies lesion contrast (microaneurysms, haemorrhages, exudates).
+- Dataset: APTOS 2019 (3,662 retinal fundus images, 5 classes)
+- Preprocessing steps:
+  - Removal of dark borders using circular cropping
+  - Resizing images to 224×224
+  - Contrast enhancement using Ben Graham method
+- Data augmentation:
+  - Flips, rotations, distortions, HSV jitter
+- Class imbalance handled using weighted sampling
 
-### Hybrid Loss
-```
-L = 0.6 × L_CE + 0.4 × L_SmoothL1
-```
-- `L_CE`: Cross-Entropy with label smoothing (ε = 0.1)
-- `L_SmoothL1`: Huber loss — stable ordinal gradients, robust to outliers
+---
+
+### 2️. Stratified Cross-Validation
+
+- Dataset split using **Stratified 4-Fold Cross-Validation**
+- Maintains equal class distribution in each fold
+- Ensures robust and unbiased model evaluation
+
+---
+
+### 3️. Hybrid EfficientNet-B3 Model
+
+![Model Architecture](Methodology/architecture.jpeg)
+
+- Backbone: EfficientNet-B3 (pretrained on ImageNet)
+- Feature Extraction:
+  - Global Average Pooling → 1536-dimensional feature vector
+- Regularization:
+  - Dropout (p = 0.3)
+
+---
+
+### 4️. Dual-Head Architecture
+
+#### 🔹 Classification Head
+- Linear layer (1536 → 5)
+- Softmax activation
+- Outputs class probabilities
+
+#### 🔹 Regression Head
+- Linear layer (1536 → 1)
+- Outputs continuous severity score
+
+This hybrid design captures both:
+- Categorical predictions (classification)
+- Ordinal relationships (regression)
+
+---
+
+### 5️. Training Strategy
+
+#### Phase 1:
+- Backbone frozen
+- Only heads trained
+
+#### Phase 2:
+- Full model fine-tuned
+- Differential learning rates:
+  - Backbone → small LR
+  - Heads → higher LR
+
+---
+
+### 6️. Loss Function
+
+Hybrid loss is used:
+
+L = 0.6 × CrossEntropy + 0.4 × SmoothL1
+
+- Cross-Entropy → classification accuracy
+- Smooth L1 → regression stability
+
+---
+
+### 7️. Threshold Optimization
+
+- Regression outputs are continuous values
+- Converted to discrete classes using thresholds
+
+Initial thresholds:
+[0.5, 1.5, 2.5, 3.5]
+
+
+- Optimized using **Nelder-Mead method**
+- Objective: maximize Quadratic Weighted Kappa (QWK)
+
+---
+
+### 8️. Ensemble Method
+
+A 6-model ensemble is used:
+
+- 4 models from cross-validation
+- 1 hybrid model
+- 1 regression-only model
+
+Combination:
+- Softmax averaging (classification)
+- Regression averaging
+- Final weighted fusion:
+  - 0.6 (classification)
+  - 0.4 (regression)
+
+---
+
+### 9️. Explainability
+
+- Grad-CAM++ is applied
+- Highlights important retinal regions
+- Improves interpretability of predictions
+
+---
+
+### 10. Final Output
+
+- DR severity grade (0–4)
+- Confidence score
+- Visual explanation (heatmap)
+
+---
 
 ### Hyperparameters
 
