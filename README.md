@@ -73,31 +73,6 @@ Decision thresholds from the regression output are optimized via **Nelder-Mead**
 
 ![Model Architecture](Methodology/architecture.jpeg)
 
-```
-Input (288×288×3)
-        │
-        ▼
-┌─────────────────────────────────────┐
-│   EfficientNet-B3 Backbone          │  ← ImageNet pretrained (~12M params)
-│   Stem Conv → MBConv (7 stages)     │
-│   Fused-MBConv → Global Avg Pool    │
-│          1536-dim feature vector    │
-└──────────────┬──────────────────────┘
-               │  Dropout (p=0.3)
-        ┌──────┴──────┐
-        ▼             ▼
-  Classification   Regression
-     Head            Head
-  Linear(1536→5)  Linear(1536→1)
-     Softmax       Nelder-Mead
-        │          Thresholds
-        ▼             ▼
-   L_CE (×0.6)  L_SmoothL1 (×0.4)
-        └──────┬──────┘
-               ▼
-        Hybrid Loss L
-    L = 0.6·L_CE + 0.4·L_SmoothL1
-```
 
 **Training Strategy:**
 - **Phase 1** (5 epochs): Frozen backbone, heads only — AdamW, LR = 1×10⁻³
