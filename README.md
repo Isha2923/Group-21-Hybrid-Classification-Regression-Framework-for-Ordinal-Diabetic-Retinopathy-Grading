@@ -70,6 +70,9 @@ Decision thresholds from the regression output are optimized via **Nelder-Mead**
 
 ## Architecture
 
+
+![Model Architecture](Methodology/architecture.jpeg)
+
 ```
 Input (288×288×3)
         │
@@ -262,6 +265,9 @@ grayscale_cam = cam(input_tensor=img_tensor, targets=[RegressionTarget()])[0]
 ---
 
 ## Methodology
+
+![Methodology Pipeline](assets/methodology_pipeline.jpeg)
+
 
 ### Preprocessing — Ben Graham Pipeline
 Raw fundus images are: (1) circle-cropped to remove dark borders, (2) resized to 288×288, and (3) enhanced via Gaussian subtraction:
