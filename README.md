@@ -34,6 +34,8 @@ Dept. of Computer Science, Indira Gandhi Delhi Technical University for Women, N
 
 ---
 
+Working colab link - https://colab.research.google.com/drive/1cYPRw0wS1L8EUrEvx6CAGXvhx-PI1IJU?authuser=1
+
 ## Overview
 
 Diabetic Retinopathy (DR) is a leading cause of preventable blindness, affecting over 30% of the 463 million patients with diabetes worldwide. This project presents a **hybrid dual-head deep learning framework** that grades DR severity into five classes (Grade 0–4) from fundus retinal photographs.
